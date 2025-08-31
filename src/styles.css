@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@import "primeicons/primeicons.css";
+@plugin "tailwindcss-primeui";
+@custom-variant dark (&:where(.my-app-dark, .my-app-dark *));
+
+@font-face {
+  font-family: "Mona Sans";
+  src: url("./assets/fonts/Mona-Sans.ttf") format("truetype");
+}
+
+html {
+  font-family: "Mona Sans", sans-serif;
+  color: var(--text-color);
+}
