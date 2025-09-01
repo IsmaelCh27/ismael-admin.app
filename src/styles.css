@@ -9,7 +9,26 @@
   src: url("./assets/fonts/Mona-Sans.ttf") format("truetype");
 }
 
+:root {
+  --background: #f5f4f7;
+  --surface: #ffffff;
+  --foreground: #1f2937;
+  --text-color: #1f2937; /* #010101; */
+}
+
 html {
   font-family: "Mona Sans", sans-serif;
   color: var(--text-color);
+}
+
+@layer components {
+  .background {
+    background-color: var(--background);
+    color: var(--text-color);
+  }
+
+  .surface {
+    background-color: var(--surface);
+    color: var(--text-color);
+  }
 }
