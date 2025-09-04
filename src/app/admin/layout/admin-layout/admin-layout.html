@@ -1,0 +1,15 @@
+<div class="background min-h-screen flex">
+  <!-- Sidebar -->
+  <admin-sidebar [visible]="visibleSidebar()" (newVisible)="addVisible($event)" />
+
+  <div class="w-full flex flex-col">
+    <!-- Navbar -->
+    <div class="h-[60px] w-full">
+      <admin-navbar [visible]="visibleSidebar()" (newVisible)="addVisible($event)" />
+    </div>
+    <!-- Main content -->
+    <div class="p-4 h-full rounded-t-xl">
+      <router-outlet />
+    </div>
+  </div>
+</div>

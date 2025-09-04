@@ -6,8 +6,12 @@ export const routes: Routes = [
     loadChildren: () => import('./auth/auth.routes'),
   },
   {
+    path: 'admin',
+    loadChildren: () => import('./admin/admin.routes'),
+  },
+  {
     path: '',
-    redirectTo: 'auth/login',
+    redirectTo: 'admin',
     pathMatch: 'full',
   },
 ];

@@ -1,12 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
-@import "tailwindcss";
-@import "primeicons/primeicons.css";
+@import 'tailwindcss';
+@import 'primeicons/primeicons.css';
 @plugin "tailwindcss-primeui";
 @custom-variant dark (&:where(.my-app-dark, .my-app-dark *));
 
 @font-face {
-  font-family: "Mona Sans";
-  src: url("./assets/fonts/Mona-Sans.ttf") format("truetype");
+  font-family: 'Mona Sans';
+  src: url('./assets/fonts/Mona-Sans.ttf') format('truetype');
 }
 
 :root {
@@ -17,18 +17,20 @@
 }
 
 html {
-  font-family: "Mona Sans", sans-serif;
+  font-family: 'Mona Sans', sans-serif;
   color: var(--text-color);
 }
 
 @layer components {
   .background {
     background-color: var(--background);
-    color: var(--text-color);
   }
 
   .surface {
     background-color: var(--surface);
-    color: var(--text-color);
+  }
+
+  .menu-animation {
+    @apply transition-all duration-800 ease-in-out;
   }
 }
