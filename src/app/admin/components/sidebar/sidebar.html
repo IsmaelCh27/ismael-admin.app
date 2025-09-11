@@ -4,7 +4,7 @@
     [visible]="!visible()"
     styleClass="w-[280px]! "
     transitionOptions="500ms cubic-bezier(1, 1, 1, 1)"
-    (onHide)="close()"
+    (onHide)="onHide()"
     [closable]="false"
   >
     <ng-template #header>
@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        @for (menu of menus; track trackByLabel($index, menu)) {
+        @for (menu of menus; track menu.link) {
           <a
             [routerLink]="menu.link"
             [routerLinkActiveOptions]="{ exact: true }"
@@ -48,11 +48,9 @@
         routerLinkActive="text-primary-500 bg-primary-100"
         [class]="isExpanded() ? 'w-[190px]' : 'w-12'"
         class="flex items-center h-12 px-3 rounded-lg text-gray-500 hover:bg-primary-100 hover:text-primary-500 menu-animation"
-        pTooltip="Salir"
-        tooltipPosition="right"
-        [tooltipOptions]="{ disabled: isExpanded() }"
+        (click)="handleLogout()"
       >
-        <lucide-angular [img]="LogOut" [strokeWidth]="1.3" />
+        <lucide-angular [img]="LogOutIcon" [strokeWidth]="1.3" />
         <div [class]="isExpanded() ? 'w-full' : 'w-0'" class="ps-3 overflow-hidden menu-animation">
           <span class=""> Salir </span>
         </div>
@@ -86,7 +84,7 @@
         >
           <span class="text-xs text-gray-400 font-light whitespace-nowrap"> MENU PRINCIPAL </span>
         </div>
-        @for (menu of menus; track trackByLabel($index, menu)) {
+        @for (menu of menus; track menu.link) {
           <a
             [routerLink]="menu.link"
             [routerLinkActiveOptions]="{ exact: true }"
@@ -121,8 +119,9 @@
           pTooltip="Salir"
           tooltipPosition="right"
           [tooltipOptions]="{ disabled: isExpanded() }"
+          (click)="handleLogout()"
         >
-          <lucide-angular [img]="LogOut" [strokeWidth]="1.3" />
+          <lucide-angular [img]="LogOutIcon" [strokeWidth]="1.3" />
           <div
             [class]="isExpanded() ? 'w-full' : 'w-0'"
             class="ps-3 overflow-hidden menu-animation"

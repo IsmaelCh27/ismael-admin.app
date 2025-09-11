@@ -27,13 +27,9 @@ type MenuEntry = {
   templateUrl: './sidebar.html',
 })
 export class Sidebar {
-  readonly LogOut = LogOut;
+  readonly LogOutIcon = LogOut;
+
   menus: MenuEntry[] = [
-    // {
-    //   label: 'Dashboard',
-    //   icon: LayoutDashboard,
-    //   link: '/admin',
-    // },
     {
       label: 'Proyectos',
       icon: Laptop,
@@ -46,14 +42,13 @@ export class Sidebar {
     },
   ];
 
-  // Breakpoints: xl() === true for widths < 1280 (collapsed mode); sm() === true for widths < 640 (drawer mode)
-  xl = signal(window.innerWidth < 1280);
-  sm = signal(window.innerWidth < 640);
-  // Visible is controlled by parent; when in desktop (not xl), it means expanded/collapsed
-  visible = input.required<boolean>();
-  newVisible = output<boolean>();
+  xl = signal<boolean>(window.innerWidth < 1280);
+  sm = signal<boolean>(window.innerWidth < 640);
 
-  // Expanded only when not xl (>=1280) and visible is true
+  visible = input.required<boolean>();
+  close = output<boolean>();
+  logout = output<void>();
+
   isExpanded = computed(() => {
     return (!this.xl() && this.visible()) || (!this.visible() && this.xl());
   });
@@ -78,11 +73,11 @@ export class Sidebar {
     this.xl.set(w < 1280);
   }
 
-  close = () => {
-    this.newVisible.emit(!this.visible());
+  onHide = () => {
+    this.close.emit(!this.visible());
   };
 
-  trackByLabel(_index: number, item: MenuEntry) {
-    return item.label;
+  handleLogout() {
+    this.logout.emit();
   }
 }

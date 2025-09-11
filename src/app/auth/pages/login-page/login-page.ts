@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NotificationService } from '@src/app/shared/services/notification-service';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -20,6 +21,7 @@ import { PasswordModule } from 'primeng/password';
   templateUrl: './login-page.html',
 })
 export class LoginPage {
+  private router = inject(Router);
   formBuilder = inject(FormBuilder);
 
   loginForm = this.formBuilder.group({
@@ -34,6 +36,7 @@ export class LoginPage {
       const { email, password } = this.loginForm.value;
       if (email === 'isma@email.com' && password === '123456') {
         this.notification.success('Autenticado', 'Bien venido!');
+        this.router.navigate(['/admin']);
       } else {
         this.notification.error(
           'Error',

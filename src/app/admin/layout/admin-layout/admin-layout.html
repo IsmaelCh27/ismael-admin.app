@@ -1,11 +1,19 @@
 <div class="background min-h-screen flex">
   <!-- Sidebar -->
-  <admin-sidebar [visible]="visibleSidebar()" (newVisible)="addVisible($event)" />
+  <admin-sidebar
+    [visible]="visibleSidebar()"
+    (close)="onClose($event)"
+    (logout)="confirmLogout()"
+  />
 
   <div class="w-full flex flex-col">
     <!-- Navbar -->
     <div class="h-[60px] w-full">
-      <admin-navbar [visible]="visibleSidebar()" (newVisible)="addVisible($event)" />
+      <admin-navbar
+        [visible]="visibleSidebar()"
+        (close)="onClose($event)"
+        (logout)="confirmLogout()"
+      />
     </div>
     <!-- Main content -->
     <div class="p-4 h-full rounded-t-xl">
@@ -13,3 +21,6 @@
     </div>
   </div>
 </div>
+
+<!-- Confirmation Dialog SignOut -->
+<p-confirmdialog />
