@@ -23,4 +23,17 @@
 </div>
 
 <!-- Confirmation Dialog SignOut -->
-<p-confirmdialog />
+<p-confirmdialog>
+  <ng-template #footer let-footer>
+    <div class="flex justify-end gap-3">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="isLoading()"
+        (click)="logoutReject()"
+      />
+      <p-button label="Confirmar" [loading]="isLoading()" (click)="logoutAccept()" />
+    </div>
+  </ng-template>
+</p-confirmdialog>

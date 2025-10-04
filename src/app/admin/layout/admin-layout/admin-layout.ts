@@ -1,20 +1,25 @@
+import { Navbar } from '@admin/components/navbar/navbar';
+import { Sidebar } from '@admin/components/sidebar/sidebar';
 import { Component, inject, signal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
+import { AuthService } from '@auth/services/auth-service';
 import { ConfirmationService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { Navbar } from '../../components/navbar/navbar';
-import { Sidebar } from '../../components/sidebar/sidebar';
 
 @Component({
   selector: 'app-admin-layout',
-  imports: [RouterOutlet, Navbar, Sidebar, ConfirmDialog],
+  imports: [RouterOutlet, Navbar, Sidebar, ConfirmDialog, ButtonModule],
   templateUrl: './admin-layout.html',
   providers: [ConfirmationService],
 })
 export class AdminLayout {
-  private router = inject(Router);
   visibleSidebar = signal(true);
+
   private confirmationService = inject(ConfirmationService);
+
+  private authService = inject(AuthService);
+  isLoading = signal(false);
 
   onClose(value: boolean) {
     this.visibleSidebar.set(value);
@@ -25,21 +30,21 @@ export class AdminLayout {
       message: '¿Estás seguro que deseas cerrar sesión?',
       header: 'Cerrar sesión',
       icon: 'pi pi-info-circle',
-      rejectLabel: 'Cancel',
-      rejectButtonProps: {
-        label: 'Cancel',
-        severity: 'secondary',
-        outlined: true,
-      },
-      acceptButtonProps: {
-        label: 'Confirmar',
-        severity: 'primary',
-      },
-
-      accept: () => {
-        this.router.navigate(['/auth/login']);
-      },
+      closable: false,
+      accept: () => {},
       reject: () => {},
     });
+  }
+
+  async logoutAccept() {
+    this.isLoading.set(true);
+    await this.authService.signOut();
+
+    this.confirmationService.close();
+    this.isLoading.set(false);
+  }
+
+  logoutReject() {
+    this.confirmationService.close();
   }
 }
