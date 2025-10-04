@@ -1,10 +1,9 @@
-import { Injectable, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Injectable } from '@angular/core';
 import { environment } from '@src/environments/environment';
 import {
-  createClient,
   type AuthChangeEvent,
   type AuthSession,
+  createClient,
   type Session,
   type SupabaseClient,
   type User,
@@ -18,8 +17,6 @@ export class AuthService {
     environment.supabaseUrl,
     environment.supabaseKey,
   );
-
-  private router = inject(Router);
 
   private _session: AuthSession | null = null;
 
@@ -36,7 +33,7 @@ export class AuthService {
       this._session = data.session ?? null;
 
       return this._session;
-    } catch (e) {
+    } catch {
       return null;
     }
   }
@@ -72,8 +69,6 @@ export class AuthService {
   async signOut() {
     const { error } = await this.supabase.auth.signOut();
     if (!error) {
-      this.router.navigate(['/auth/login']);
-
       this._session = null;
     }
     return { error };
@@ -97,7 +92,9 @@ export class AuthService {
       this._session = session ?? null;
       try {
         cb(event, session ?? null);
-      } catch (e) {}
+      } catch {
+        // Ignore callback errors
+      }
     });
   }
 }
