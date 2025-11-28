@@ -1,10 +1,12 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {
-  Laptop,
+  Image,
   LogOut,
   LucideAngularModule,
   type LucideIconData,
+  MonitorCog,
+  MonitorSmartphone,
 } from 'lucide-angular';
 import { DrawerModule } from 'primeng/drawer';
 import { TooltipModule } from 'primeng/tooltip';
@@ -32,12 +34,17 @@ export class Sidebar {
   menus: MenuEntry[] = [
     {
       label: 'Proyectos',
-      icon: Laptop,
+      icon: MonitorSmartphone,
       link: '/admin/projects',
     },
     {
+      label: 'Experiencias',
+      icon: MonitorCog,
+      link: '/admin/experiences',
+    },
+    {
       label: 'Imagenes',
-      icon: Laptop,
+      icon: Image,
       link: '/admin/images',
     },
   ];

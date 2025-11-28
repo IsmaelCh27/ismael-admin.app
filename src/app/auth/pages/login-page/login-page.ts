@@ -71,8 +71,11 @@ export class LoginPage {
           'Revisa tu correo para confirmar la cuenta.',
         );
       }
-    } catch (e) {
-      this.notification.error('Error', 'Error inesperado al iniciar sesión.');
+    } catch (error) {
+      this.notification.error(
+        'Error',
+        `Error inesperado al iniciar sesión. ${error}`,
+      );
     } finally {
       this.isLoading.set(false);
     }

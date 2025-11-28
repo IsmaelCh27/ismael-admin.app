@@ -35,8 +35,8 @@ export class NotificationService {
     this.show({ severity: 'warn', summary, detail });
   }
 
-  error(summary: string, detail?: string) {
-    this.show({ severity: 'error', summary, detail });
+  error(summary: string, detail?: string, life: number = 6000) {
+    this.show({ severity: 'error', summary, detail, life });
   }
 
   secondary(summary: string, detail?: string) {

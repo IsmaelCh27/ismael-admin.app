@@ -5,11 +5,11 @@ import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from '@auth/services/auth-service';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { ConfirmDialog } from 'primeng/confirmdialog';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-admin-layout',
-  imports: [RouterOutlet, Navbar, Sidebar, ConfirmDialog, ButtonModule],
+  imports: [RouterOutlet, Navbar, Sidebar, ConfirmDialogModule, ButtonModule],
   templateUrl: './admin-layout.html',
   providers: [ConfirmationService],
 })
