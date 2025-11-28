@@ -1,6 +1,7 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {
+  Cpu,
   Image,
   LogOut,
   LucideAngularModule,
@@ -46,6 +47,11 @@ export class Sidebar {
       label: 'Imagenes',
       icon: Image,
       link: '/admin/images',
+    },
+    {
+      label: 'Tecnologías',
+      icon: Cpu,
+      link: '/admin/technologies',
     },
   ];
 

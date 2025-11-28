@@ -1,0 +1,215 @@
+<p-card class="h-full">
+  <ng-template pTemplate="title">
+    <div class="flex justify-between items-center pb-5">
+      <h2 class="text-2xl">Tecnologías</h2>
+      <div class="">
+        <p-button label="Nuevo" icon="pi pi-plus" size="small" styleClass="" (click)="openForm()" />
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="border border-gray-200 rounded-lg pt-1">
+    <p-table
+      [value]="technologies()"
+      [paginator]="true"
+      [rows]="10"
+      [tableStyle]="{}"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      rowHover
+    >
+      <ng-template #header>
+        <tr>
+          <th>Nro.</th>
+          <th>Logo</th>
+          <th>Nombre</th>
+          <th>Documentación</th>
+          <th class="text-center!">Habilidad</th>
+          <th class="text-end! w-10">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <tr>
+          @if (isLoading()) {
+            <td>
+              <p-skeleton width="2rem" />
+            </td>
+            <td>
+              <p-skeleton size="2rem" shape="circle" />
+            </td>
+            <td>
+              <p-skeleton />
+            </td>
+            <td>
+              <p-skeleton />
+            </td>
+            <td>
+              <p-skeleton />
+            </td>
+            <td>
+              <div class="flex gap-1">
+                <p-skeleton />
+                <p-skeleton />
+              </div>
+            </td>
+          } @else {
+            <td colspan="6" class="text-center!">No hay tecnologías registradas.</td>
+          }
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-technology let-index="rowIndex">
+        <tr>
+          <td>{{ index + 1 }}</td>
+          <td>
+            <img [src]="technology.icon_link" [style]="{ width: 'auto', height: '23px' }" />
+          </td>
+          <td>{{ technology.name }}</td>
+          <td>{{ technology.documentation_link }}</td>
+          <td class="text-center!">
+            @if (technology.is_skill) {
+              <p-badge value="Si" severity="success" />
+            } @else {
+              <p-badge value="No" severity="secondary" />
+            }
+          </td>
+          <td class="py-0!">
+            <div class="flex justify-end gap-1">
+              <p-button
+                icon="pi pi-pencil"
+                size="small"
+                severity="info"
+                pTooltip="Editar"
+                tooltipPosition="bottom"
+                [outlined]="true"
+                (click)="handleClickEdit(technology)"
+              />
+              <p-button
+                icon="pi pi-trash"
+                size="small"
+                severity="danger"
+                pTooltip="Eliminar"
+                tooltipPosition="bottom"
+                [outlined]="true"
+                (click)="handleClickDelete($event, technology)"
+              >
+              </p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</p-card>
+
+<p-confirmdialog [closable]="false">
+  <ng-template #footer let-footer>
+    <div class="flex justify-end gap-3">
+      <p-button
+        label="No"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="isLoading()"
+        (click)="rejectDelete()"
+      />
+      <p-button label="Si" severity="danger" [loading]="isLoading()" (click)="acceptDelete()" />
+    </div>
+  </ng-template>
+</p-confirmdialog>
+
+<p-dialog
+  [header]="technology().id ? 'Editar Tecnología' : 'Registrar Tecnología'"
+  [modal]="true"
+  [(visible)]="formOpen"
+  [focusOnShow]="false"
+  (onShow)="nameInput.focus()"
+  [style]="{ width: '40rem' }"
+>
+  <div class="flex items-center gap-4 pt-5 px-3">
+    <!-- Form -->
+
+    <form
+      class="flex flex-col gap-8 leading-7 w-full"
+      [formGroup]="validForm"
+      (ngSubmit)="onSubmit()"
+    >
+      <!-- Nombre -->
+      <p-floatlabel>
+        <input
+          pInputText
+          type="text"
+          inputId="name"
+          #nameInput
+          formControlName="name"
+          [invalid]="validForm.get('name')?.touched && validForm.get('name')?.invalid"
+          fluid
+        />
+        <label for="name">Nombre *</label>
+      </p-floatlabel>
+
+      <!-- Logo -->
+      <p-floatlabel>
+        <p-select
+          [options]="images()"
+          [showClear]="true"
+          optionValue="public_url"
+          inputId="icon_link"
+          formControlName="icon_link"
+          [invalid]="validForm.get('icon_link')?.touched && validForm.get('icon_link')?.invalid"
+          fluid
+        >
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2">
+              <img
+                [src]="validForm.get('icon_link')?.value"
+                [class]="'flag flag-'"
+                style="width: 18px"
+              />
+              <div>{{ selectedOption?.name }}</div>
+            </div>
+          </ng-template>
+          <ng-template let-image #item>
+            <div class="flex items-center gap-2">
+              <img [src]="image.public_url" [class]="'flag flag-'" style="width: 22px" />
+              <div>{{ image.name }}</div>
+            </div>
+          </ng-template>
+        </p-select>
+        <label for="icon_link">Link Icono *</label>
+      </p-floatlabel>
+
+      <!-- Link Documentación -->
+      <p-floatlabel>
+        <input
+          pInputText
+          type="text"
+          inputId="documentation_link"
+          formControlName="documentation_link"
+          [invalid]="
+            validForm.get('documentation_link')?.touched &&
+            validForm.get('documentation_link')?.invalid
+          "
+          fluid
+        />
+        <label for="documentation_link">Link Documentación *</label>
+      </p-floatlabel>
+
+      <!-- Is Skill -->
+
+      <div class="flex items-center gap-3">
+        <p-toggleswitch inputId="is_skill" formControlName="is_skill" />
+        <label for="is_skill">Es Habilidad</label>
+      </div>
+
+      <div class="flex justify-end gap-3">
+        <p-button
+          label="Cancel"
+          severity="secondary"
+          (click)="closeForm()"
+          [disabled]="isLoading()"
+        />
+        <p-button label="Guardar" icon="pi pi-check" type="submit" [loading]="isLoading()" />
+      </div>
+    </form>
+  </div>
+</p-dialog>

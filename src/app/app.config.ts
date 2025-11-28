@@ -1,3 +1,4 @@
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import {
   type ApplicationConfig,
   provideBrowserGlobalErrorListeners,
@@ -15,13 +16,14 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
+    provideHttpClient(withFetch()),
     provideAnimationsAsync(),
     providePrimeNG({
       ripple: true,
       inputVariant: 'outlined',
       translation: {
-        accept: 'Aceptar',
-        reject: 'Rechazar',
+        // accept: 'Aceptar',
+        // reject: 'Rechazar',
 
         //translations
         dayNames: [
