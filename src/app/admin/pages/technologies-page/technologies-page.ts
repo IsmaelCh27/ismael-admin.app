@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, signal } from '@angular/core';
 import {
   FormBuilder,
@@ -34,7 +34,6 @@ import {
   imports: [
     CardModule,
     TableModule,
-    CommonModule,
     ButtonModule,
     TooltipModule,
     DialogModule,
@@ -48,8 +47,8 @@ import {
     SelectModule,
     ToggleSwitchModule,
     ConfirmDialogModule,
-    BadgeModule,
-  ],
+    BadgeModule
+],
   templateUrl: './technologies-page.html',
   providers: [ConfirmationService],
 })
