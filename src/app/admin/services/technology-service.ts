@@ -98,12 +98,6 @@ export class TechnologyService {
       this.notification.success('Éxito', 'Tecnología creada con éxito.');
       return data;
     } catch (error) {
-      // this.notification.error(
-      //   'Error',
-      //   `Error al crear tecnología: ${
-      //     (error as { message?: string })?.message ?? 'Error desconocido'
-      //   }`,
-      // );
       throw new Error(
         `Error al crear tecnología: ${
           (error as { message?: string })?.message ?? 'Error desconocido'
@@ -133,13 +127,6 @@ export class TechnologyService {
       this.notification.success('Éxito', 'Tecnología actualizada con éxito.');
       return data;
     } catch (error) {
-      // this.notification.error(
-      //   'Error',
-      //   `Error al actualizar tecnología: ${
-      //     (error as { message?: string })?.message ?? 'Error desconocido'
-      //   }`,
-      // );
-
       throw new Error(
         `Error al actualizar tecnología: ${
           (error as { message?: string })?.message ?? 'Error desconocido'
@@ -164,12 +151,6 @@ export class TechnologyService {
 
       this.notification.success('Éxito', 'Tecnología eliminada con éxito.');
     } catch (error) {
-      // this.notification.error(
-      //   'Error',
-      //   `Error al eliminar tecnología: ${
-      //     (error as { message?: string })?.message ?? 'Error desconocido'
-      //   }`,
-      // );
       throw new Error(
         `Error al eliminar tecnología: ${
           (error as { message?: string })?.message ?? 'Error desconocido'

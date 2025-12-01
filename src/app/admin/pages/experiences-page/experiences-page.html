@@ -1,0 +1,216 @@
+<p-card class="h-full">
+  <ng-template pTemplate="title">
+    <div class="flex justify-between items-center pb-5">
+      <h2 class="text-2xl">Experiencias</h2>
+      <div class="">
+        <p-button label="Nuevo" icon="pi pi-plus" size="small" styleClass="" (click)="openForm()" />
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="border border-gray-200 rounded-lg pt-1">
+    <p-table
+      [value]="experiences()"
+      [paginator]="true"
+      [rows]="10"
+      [tableStyle]="{}"
+      [rowsPerPageOptions]="[5, 10, 20]"
+    >
+      <ng-template #header>
+        <tr>
+          <th width="2rem">Nro.</th>
+          <th>Empresa</th>
+          <th>Cargo</th>
+          <th>Desde</th>
+          <th>Hasta</th>
+          <!-- <th>Descripción</th> -->
+          <th class="text-end! w-10">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <tr>
+          @if (isLoading()) {
+            <td>
+              <p-skeleton width="2rem" />
+            </td>
+            <td>
+              <p-skeleton />
+            </td>
+            <td>
+              <p-skeleton />
+            </td>
+            <td>
+              <p-skeleton />
+            </td>
+            <td>
+              <p-skeleton />
+            </td>
+            <td>
+              <div class="flex gap-1">
+                <p-skeleton />
+                <p-skeleton />
+              </div>
+            </td>
+          } @else {
+            <td colspan="6" class="text-center!">No hay tecnologías registradas.</td>
+          }
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-experience let-index="rowIndex">
+        <tr>
+          <td>{{ index + 1 }}</td>
+          <td>{{ experience.company }}</td>
+          <td>{{ experience.position }}</td>
+          <td>{{ experience.start_date }}</td>
+          <td>{{ experience.end_date }}</td>
+          <!-- <td>{{ experience.description }}</td> -->
+          <td class="py-0!">
+            <div class="flex justify-end gap-1">
+              <p-button
+                icon="pi pi-pencil"
+                size="small"
+                severity="info"
+                pTooltip="Editar"
+                tooltipPosition="bottom"
+                [outlined]="true"
+                (click)="handleClickEdit(experience)"
+              />
+              <p-button
+                icon="pi pi-trash"
+                size="small"
+                severity="danger"
+                pTooltip="Eliminar"
+                tooltipPosition="bottom"
+                [outlined]="true"
+                (click)="handleClickDelete($event, experience)"
+              >
+              </p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</p-card>
+
+<p-confirmdialog [closable]="false">
+  <ng-template #footer let-footer>
+    <div class="flex justify-end gap-3">
+      <p-button
+        label="No"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="isLoading()"
+        (click)="rejectDelete()"
+      />
+      <p-button label="Si" severity="danger" [loading]="isLoading()" (click)="acceptDelete()" />
+    </div>
+  </ng-template>
+</p-confirmdialog>
+
+<div class="card flex justify-center">
+  <p-dialog
+    header="Registrar Experiencia"
+    [modal]="true"
+    [(visible)]="formOpen"
+    [focusOnShow]="false"
+    (onShow)="companyInput.focus()"
+    [style]="{ width: '40rem' }"
+  >
+    <div class="flex items-center gap-4 pt-5 px-3">
+      <!-- Form -->
+      <form
+        class="flex flex-col gap-8 leading-7 w-full"
+        [formGroup]="validForm"
+        (ngSubmit)="onSubmit()"
+      >
+        <!-- Empresa -->
+        <p-floatlabel>
+          <input
+            pInputText
+            type="text"
+            inputId="company"
+            #companyInput
+            formControlName="company"
+            [invalid]="validForm.get('company')?.touched && validForm.get('company')?.invalid"
+            fluid
+          />
+          <label for="company">Empresa *</label>
+        </p-floatlabel>
+
+        <!-- Cargo -->
+        <p-floatlabel>
+          <input
+            pInputText
+            type="text"
+            inputId="position"
+            formControlName="position"
+            [invalid]="validForm.get('position')?.touched && validForm.get('position')?.invalid"
+            fluid
+          />
+          <label for="position">Cargo *</label>
+        </p-floatlabel>
+
+        <!-- Desde -->
+        <div class="flex gap-3">
+          <p-floatlabel class="flex-1">
+            <p-datepicker
+              inputId="start_date"
+              iconDisplay="input"
+              formControlName="start_date"
+              view="month"
+              dateFormat="mm/yy"
+              [invalid]="
+                validForm.get('start_date')?.touched && validForm.get('start_date')?.invalid
+              "
+              showIcon
+              fluid
+            />
+            <label for="start_date">Desde *</label>
+          </p-floatlabel>
+
+          <!-- Hasta -->
+          <p-floatlabel class="flex-1">
+            <p-datepicker
+              inputId="end_date"
+              iconDisplay="input"
+              formControlName="end_date"
+              view="month"
+              dateFormat="mm/yy"
+              showIcon
+              fluid
+            />
+            <label for="end_date">Hasta</label>
+          </p-floatlabel>
+        </div>
+
+        <!-- Descripción -->
+        <p-floatlabel>
+          <textarea
+            pTextarea
+            id="description"
+            rows="5"
+            formControlName="description"
+            [invalid]="
+              validForm.get('description')?.touched && validForm.get('description')?.invalid
+            "
+            fluid
+          ></textarea>
+          <label for="description">Descripción</label>
+        </p-floatlabel>
+
+        <div class="flex justify-end gap-3">
+          <p-button
+            label="Cancel"
+            severity="secondary"
+            (click)="closeForm()"
+            [disabled]="isLoading()"
+          />
+          <p-button label="Guardar" icon="pi pi-check" type="submit" [loading]="isLoading()" />
+        </div>
+      </form>
+    </div>
+  </p-dialog>
+</div>

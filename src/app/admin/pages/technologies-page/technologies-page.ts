@@ -1,4 +1,3 @@
-
 import { Component, inject, signal } from '@angular/core';
 import {
   FormBuilder,
@@ -47,8 +46,8 @@ import {
     SelectModule,
     ToggleSwitchModule,
     ConfirmDialogModule,
-    BadgeModule
-],
+    BadgeModule,
+  ],
   templateUrl: './technologies-page.html',
   providers: [ConfirmationService],
 })
@@ -76,7 +75,6 @@ export class TechnologiesPage {
   technologies = signal<Technology[]>([]);
   images = signal<Image[]>([]);
   isLoading = signal(true);
-  error = signal<string | null>(null);
 
   async ngOnInit() {
     await this.loadTechnologies();
@@ -84,7 +82,6 @@ export class TechnologiesPage {
 
   async loadTechnologies() {
     this.isLoading.set(true);
-    this.error.set(null);
 
     const techs = await this.technologyService.getTechnologies();
 
@@ -103,7 +100,6 @@ export class TechnologiesPage {
 
   async loadImages() {
     this.isLoading.set(true);
-    this.error.set(null);
 
     const imgs = await this.imageService.getImages();
 
@@ -159,6 +155,9 @@ export class TechnologiesPage {
       icon_link: technology.icon_link,
       is_skill: technology.is_skill,
     });
+
+    this.loadImages();
+
     this.formOpen.set(true);
   }
 
@@ -167,7 +166,7 @@ export class TechnologiesPage {
 
     this.confirmationService.confirm({
       target: event.currentTarget as EventTarget,
-      message: 'Estas seguro de liminar esta tecnología?',
+      message: 'Estas seguro de eliminar esta tecnología?',
       icon: 'pi pi-trash',
       rejectLabel: 'No',
       rejectButtonProps: {
