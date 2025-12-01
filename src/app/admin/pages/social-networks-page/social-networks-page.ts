@@ -18,18 +18,17 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
-import { TextareaModule } from 'primeng/textarea';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
 import { type Image, ImageService } from '../../services/image-service';
 import {
-  type CreateTechnology,
-  type Technology,
-  TechnologyService,
-} from '../../services/technology-service';
+  type CreateSocialNetwork,
+  type SocialNetwork,
+  SocialNetworkService,
+} from '../../services/social-network-service';
 
 @Component({
-  selector: 'admin-technologies-page',
+  selector: 'admin-social-networks-page',
   imports: [
     CardModule,
     TableModule,
@@ -39,7 +38,6 @@ import {
     ReactiveFormsModule,
     InputTextModule,
     DatePickerModule,
-    TextareaModule,
     SkeletonModule,
     FloatLabelModule,
     FormsModule,
@@ -48,10 +46,10 @@ import {
     ConfirmDialogModule,
     BadgeModule,
   ],
-  templateUrl: './technologies-page.html',
+  templateUrl: './social-networks-page.html',
   providers: [ConfirmationService],
 })
-export class TechnologiesPage {
+export class SocialNetworksPage {
   private confirmationService = inject(ConfirmationService);
   private readonly notification = inject(NotificationService);
 
@@ -60,38 +58,38 @@ export class TechnologiesPage {
 
   validForm = this.formBuilder.group({
     name: ['', [Validators.required]],
-    documentation_link: ['', [Validators.required]],
-    icon_link: ['', [Validators.required]],
-    is_skill: [false, [Validators.required]],
+    logo: ['', [Validators.required]],
+    link: ['', [Validators.required]],
+    is_active: [false, [Validators.required]],
   });
 
-  private technologyService = inject(TechnologyService);
+  private socialNetworkService = inject(SocialNetworkService);
   private imageService = inject(ImageService);
 
   // Signal para las tecnologías con tipado correcto
-  technology = signal<Technology>({} as Technology);
-  technologies = signal<Technology[]>([]);
+  socialNetwork = signal<SocialNetwork>({} as SocialNetwork);
+  socialNetworks = signal<SocialNetwork[]>([]);
   images = signal<Image[]>([]);
   isLoading = signal(true);
 
   async ngOnInit() {
-    await this.loadTechnologies();
+    await this.loadSocialNetworks();
   }
 
-  async loadTechnologies() {
+  async loadSocialNetworks() {
     this.isLoading.set(true);
 
-    const techs = await this.technologyService.getTechnologies();
+    const socialNet = await this.socialNetworkService.getSocialNetworks();
 
-    this.technologies.set(techs);
+    this.socialNetworks.set(socialNet);
     this.isLoading.set(false);
   }
 
   openForm() {
     this.validForm.patchValue({
-      is_skill: false,
+      is_active: true,
     });
-    this.technology.set({} as Technology);
+    this.socialNetwork.set({} as SocialNetwork);
     this.loadImages();
     this.formOpen.set(true);
   }
@@ -119,22 +117,22 @@ export class TechnologiesPage {
         return;
       }
 
-      if (this.technology().id) {
-        // actualizar tecnología
-        await this.technologyService.updateTechnology(
-          this.technology().id,
-          this.validForm.value as CreateTechnology,
+      if (this.socialNetwork().id) {
+        // actualizar red social
+        await this.socialNetworkService.updateSocialNetwork(
+          this.socialNetwork().id,
+          this.validForm.value as CreateSocialNetwork,
         );
       } else {
-        // crear nueva tecnología
-        await this.technologyService.createTechnology(
-          this.validForm.value as CreateTechnology,
+        // crear nueva red social
+        await this.socialNetworkService.createSocialNetwork(
+          this.validForm.value as CreateSocialNetwork,
         );
       }
 
       this.formOpen.set(false);
 
-      await this.loadTechnologies();
+      await this.loadSocialNetworks();
 
       this.validForm.reset();
     } catch (error) {
@@ -144,14 +142,14 @@ export class TechnologiesPage {
     }
   }
 
-  handleClickEdit(technology: Technology) {
-    this.technology.set(technology);
+  handleClickEdit(socialNetwork: SocialNetwork) {
+    this.socialNetwork.set(socialNetwork);
 
     this.validForm.patchValue({
-      name: technology.name,
-      documentation_link: technology.documentation_link,
-      icon_link: technology.icon_link,
-      is_skill: technology.is_skill,
+      name: socialNetwork.name,
+      logo: socialNetwork.logo,
+      link: socialNetwork.link,
+      is_active: socialNetwork.is_active,
     });
 
     this.loadImages();
@@ -159,12 +157,12 @@ export class TechnologiesPage {
     this.formOpen.set(true);
   }
 
-  handleClickDelete(event: Event, technology: Technology) {
-    this.technology.set(technology);
+  handleClickDelete(event: Event, socialNetwork: SocialNetwork) {
+    this.socialNetwork.set(socialNetwork);
 
     this.confirmationService.confirm({
       target: event.currentTarget as EventTarget,
-      message: 'Estas seguro de eliminar esta tecnología?',
+      message: 'Estas seguro de eliminar esta red social?',
       icon: 'pi pi-trash',
       rejectLabel: 'No',
       rejectButtonProps: {
@@ -180,17 +178,17 @@ export class TechnologiesPage {
     });
   }
 
-  async deleteTechnology(technology: Technology) {
+  async deleteSocialNetwork(socialNetwork: SocialNetwork) {
     this.isLoading.set(true);
 
     try {
-      await this.technologyService.deleteTechnology(technology.id);
+      await this.socialNetworkService.deleteSocialNetwork(socialNetwork.id);
 
       this.confirmationService.close();
 
-      await this.loadTechnologies();
+      await this.loadSocialNetworks();
 
-      this.technology.set({} as Technology);
+      this.socialNetwork.set({} as SocialNetwork);
     } catch (error) {
       this.notification.error('Error', error as string);
     } finally {
@@ -199,7 +197,7 @@ export class TechnologiesPage {
   }
 
   acceptDelete() {
-    this.deleteTechnology(this.technology());
+    this.deleteSocialNetwork(this.socialNetwork());
   }
 
   rejectDelete() {

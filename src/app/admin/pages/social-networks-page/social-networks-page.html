@@ -1,0 +1,214 @@
+<p-card class="h-full">
+  <ng-template pTemplate="title">
+    <div class="flex justify-between items-center pb-5">
+      <h2 class="text-2xl">Redes Sociales</h2>
+      <div class="">
+        <p-button label="Nuevo" icon="pi pi-plus" size="small" styleClass="" (click)="openForm()" />
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="border border-gray-200 rounded-lg pt-1">
+    <p-table
+      [value]="socialNetworks()"
+      [paginator]="true"
+      [rows]="10"
+      [tableStyle]="{}"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      rowHover
+    >
+      <ng-template #header>
+        <tr>
+          <th>Nro.</th>
+          <th>Logo</th>
+          <th>Nombre</th>
+          <th>Link</th>
+          <th class="text-center!">Estado</th>
+          <th class="text-end! w-10">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <tr>
+          @if (isLoading()) {
+            <td>
+              <p-skeleton width="2rem" />
+            </td>
+            <td>
+              <p-skeleton size="2rem" shape="circle" />
+            </td>
+            <td>
+              <p-skeleton />
+            </td>
+            <td>
+              <p-skeleton />
+            </td>
+            <td>
+              <p-skeleton />
+            </td>
+            <td>
+              <div class="flex gap-1">
+                <p-skeleton />
+                <p-skeleton />
+              </div>
+            </td>
+          } @else {
+            <td colspan="6" class="text-center!">No hay redes sociales registradas.</td>
+          }
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-socialNetwork let-index="rowIndex">
+        <tr>
+          <td>{{ index + 1 }}</td>
+          <td>
+            <img [src]="socialNetwork.logo" [style]="{ width: 'auto', height: '23px' }" />
+          </td>
+          <td>{{ socialNetwork.name }}</td>
+          <td>{{ socialNetwork.link }}</td>
+          <td class="text-center!">
+            @if (socialNetwork.is_active) {
+              <p-badge value="Si" severity="success" />
+            } @else {
+              <p-badge value="No" severity="secondary" />
+            }
+          </td>
+          <td class="py-0!">
+            <div class="flex justify-end gap-1">
+              <p-button
+                icon="pi pi-pencil"
+                size="small"
+                severity="info"
+                pTooltip="Editar"
+                tooltipPosition="bottom"
+                [outlined]="true"
+                (click)="handleClickEdit(socialNetwork)"
+              />
+              <p-button
+                icon="pi pi-trash"
+                size="small"
+                severity="danger"
+                pTooltip="Eliminar"
+                tooltipPosition="bottom"
+                [outlined]="true"
+                (click)="handleClickDelete($event, socialNetwork)"
+              >
+              </p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</p-card>
+
+<p-confirmdialog [closable]="false">
+  <ng-template #footer let-footer>
+    <div class="flex justify-end gap-3">
+      <p-button
+        label="No"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="isLoading()"
+        (click)="rejectDelete()"
+      />
+      <p-button label="Si" severity="danger" [loading]="isLoading()" (click)="acceptDelete()" />
+    </div>
+  </ng-template>
+</p-confirmdialog>
+
+<p-dialog
+  [header]="socialNetwork().id ? 'Editar Red Social' : 'Registrar Red Social'"
+  [modal]="true"
+  [(visible)]="formOpen"
+  [focusOnShow]="false"
+  (onShow)="nameInput.focus()"
+  [style]="{ width: '40rem' }"
+>
+  <div class="flex items-center gap-4 pt-5 px-3">
+    <!-- Form -->
+
+    <form
+      class="flex flex-col gap-8 leading-7 w-full"
+      [formGroup]="validForm"
+      (ngSubmit)="onSubmit()"
+    >
+      <!-- Nombre -->
+      <p-floatlabel>
+        <input
+          pInputText
+          type="text"
+          inputId="name"
+          #nameInput
+          formControlName="name"
+          [invalid]="validForm.get('name')?.touched && validForm.get('name')?.invalid"
+          fluid
+        />
+        <label for="name">Nombre *</label>
+      </p-floatlabel>
+
+      <!-- Logo -->
+      <p-floatlabel>
+        <p-select
+          [options]="images()"
+          [showClear]="true"
+          optionValue="public_url"
+          inputId="logo"
+          formControlName="logo"
+          [invalid]="validForm.get('logo')?.touched && validForm.get('logo')?.invalid"
+          fluid
+        >
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2">
+              <img
+                [src]="validForm.get('logo')?.value"
+                [class]="'flag flag-'"
+                style="width: 18px"
+              />
+              <div>{{ selectedOption?.name }}</div>
+            </div>
+          </ng-template>
+          <ng-template let-image #item>
+            <div class="flex items-center gap-2">
+              <img [src]="image.public_url" [class]="'flag flag-'" style="width: 22px" />
+              <div>{{ image.name }}</div>
+            </div>
+          </ng-template>
+        </p-select>
+        <label for="logo">Logo *</label>
+      </p-floatlabel>
+
+      <!-- Link -->
+      <p-floatlabel>
+        <input
+          pInputText
+          type="text"
+          inputId="link"
+          formControlName="link"
+          [invalid]="validForm.get('link')?.touched && validForm.get('link')?.invalid"
+          fluid
+        />
+        <label for="link">Link *</label>
+      </p-floatlabel>
+
+      <!-- Is Active -->
+      <div class="flex items-center gap-3">
+        <p-toggleswitch inputId="is_active" formControlName="is_active" />
+        <label for="is_active">
+          Red Social
+          {{ validForm.get('is_active')?.value ? ' Activado' : ' Desactivado' }}
+        </label>
+      </div>
+
+      <div class="flex justify-end gap-3">
+        <p-button
+          label="Cancel"
+          severity="secondary"
+          (click)="closeForm()"
+          [disabled]="isLoading()"
+        />
+        <p-button label="Guardar" icon="pi pi-check" type="submit" [loading]="isLoading()" />
+      </div>
+    </form>
+  </div>
+</p-dialog>

@@ -8,6 +8,7 @@ import {
   type LucideIconData,
   MonitorCog,
   MonitorSmartphone,
+  Share2,
 } from 'lucide-angular';
 import { DrawerModule } from 'primeng/drawer';
 import { TooltipModule } from 'primeng/tooltip';
@@ -52,6 +53,12 @@ export class Sidebar {
       label: 'Tecnologías',
       icon: Cpu,
       link: '/admin/technologies',
+    },
+
+    {
+      label: 'Redes Sociales',
+      icon: Share2,
+      link: '/admin/social-networks',
     },
   ];
 
