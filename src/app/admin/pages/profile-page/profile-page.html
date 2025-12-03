@@ -1,0 +1,203 @@
+<p-card class="h-full">
+  <ng-template pTemplate="title">
+    <div class="flex justify-between items-center pb-5">
+      <h2 class="text-2xl">Mi Perfil</h2>
+      <div class="">
+        <p-button label="Nuevo" icon="pi pi-plus" size="small" styleClass="" (click)="openForm()" />
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="">
+    <div class="flex justify-between items-start gap-8 px-20 py-10">
+      <div class="flex flex-col gap-4 leading-7 w-[60%]">
+        <div class="flex flex-col gap-1">
+          <strong>Nombre:</strong>
+          <span>{{ profiles()[0]?.name }} {{ profiles()[0]?.last_name }}</span>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <strong>Email:</strong>
+          <span>{{ profiles()[0]?.email }}</span>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <strong>Teléfono:</strong>
+          <span>{{ profiles()[0]?.phone }}</span>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <strong>Descripción:</strong>
+          <span>{{ profiles()[0]?.description }}</span>
+        </div>
+      </div>
+      <div class="w-[35%]">
+        <div class="flex flex-col gap-2">
+          <strong>Imagen:</strong>
+          @if (profiles()[0]?.image) {
+            <div class="border border-gray-200 rounded-lg overflow-hidden w-full p-3">
+              <img
+                [src]="profiles()[0].image"
+                alt="Profile Image"
+                class="max-w-full object-cover h-auto"
+              />
+            </div>
+          } @else {
+            <div
+              class="p-8 border border-gray-200 rounded-lg flex flex-col justify-center items-center w-full py-20"
+            >
+              <i class="pi pi-image text-gray-200" style="font-size: 10rem"></i>
+              <span class="mt-5 text-gray-400">No hay imagen disponible.</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end gap-3 px-20 mt-5">
+      <p-button
+        size="small"
+        severity="danger"
+        pTooltip="Eliminar"
+        tooltipPosition="bottom"
+        [outlined]="true"
+        (click)="handleClickDelete($event, profiles()[0])"
+      >
+        <i class="pi pi-trash" pButtonIcon></i>
+        <span pButtonLabel>Eliminar</span>
+      </p-button>
+
+      <p-button
+        size="small"
+        severity="info"
+        pTooltip="Editar"
+        tooltipPosition="bottom"
+        [outlined]="true"
+        (click)="handleClickEdit(profiles()[0])"
+      >
+        <i class="pi pi-pencil" pButtonIcon></i>
+        <span pButtonLabel>Editar</span>
+      </p-button>
+    </div>
+  </div>
+</p-card>
+
+<p-confirmdialog [closable]="false">
+  <ng-template #footer let-footer>
+    <div class="flex justify-end gap-3">
+      <p-button
+        label="No"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="isLoading()"
+        (click)="rejectDelete()"
+      />
+      <p-button label="Si" severity="danger" [loading]="isLoading()" (click)="acceptDelete()" />
+    </div>
+  </ng-template>
+</p-confirmdialog>
+
+<p-dialog
+  [header]="profile().id ? 'Editar Perfil' : 'Registrar Perfil'"
+  [modal]="true"
+  [(visible)]="formOpen"
+  [focusOnShow]="false"
+  (onShow)="nameInput.focus()"
+  [style]="{ width: '40rem' }"
+>
+  <div class="flex items-center gap-4 pt-5 px-3">
+    <!-- Form -->
+
+    <form
+      class="flex flex-col gap-8 leading-7 w-full"
+      [formGroup]="validForm"
+      (ngSubmit)="onSubmit()"
+    >
+      <!-- Nombre -->
+      <p-floatlabel>
+        <input
+          pInputText
+          type="text"
+          inputId="name"
+          #nameInput
+          formControlName="name"
+          [invalid]="validForm.get('name')?.touched && validForm.get('name')?.invalid"
+          fluid
+        />
+        <label for="name">Nombre *</label>
+      </p-floatlabel>
+
+      <!-- Apellido -->
+      <p-floatlabel>
+        <input pInputText type="text" inputId="last_name" formControlName="last_name" fluid />
+        <label for="last_name">Apellido</label>
+      </p-floatlabel>
+
+      <!-- Email -->
+      <p-floatlabel>
+        <input pInputText type="text" inputId="email" formControlName="email" fluid />
+        <label for="email">Email</label>
+      </p-floatlabel>
+
+      <!-- Teléfono -->
+      <p-floatlabel>
+        <input pInputText type="text" inputId="phone" formControlName="phone" fluid />
+        <label for="phone">Teléfono </label>
+      </p-floatlabel>
+
+      <!-- Imgen -->
+      <p-floatlabel>
+        <p-select
+          [options]="images()"
+          [showClear]="true"
+          optionValue="public_url"
+          inputId="image"
+          formControlName="image"
+          [invalid]="validForm.get('image')?.touched && validForm.get('image')?.invalid"
+          fluid
+        >
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2">
+              <img
+                [src]="validForm.get('image')?.value"
+                [class]="'flag flag-'"
+                style="width: 18px"
+              />
+              <div>{{ selectedOption?.name }}</div>
+            </div>
+          </ng-template>
+          <ng-template let-image #item>
+            <div class="flex items-center gap-2">
+              <img [src]="image.public_url" [class]="'flag flag-'" style="width: 22px" />
+              <div>{{ image.name }}</div>
+            </div>
+          </ng-template>
+        </p-select>
+        <label for="image">Imagen </label>
+      </p-floatlabel>
+
+      <!-- Descripción -->
+      <p-floatlabel>
+        <textarea
+          pTextarea
+          id="description"
+          rows="5"
+          formControlName="description"
+          [invalid]="validForm.get('description')?.touched && validForm.get('description')?.invalid"
+          fluid
+        ></textarea>
+        <label for="description">Descripción</label>
+      </p-floatlabel>
+
+      <div class="flex justify-end gap-3">
+        <p-button
+          label="Cancel"
+          severity="secondary"
+          (click)="closeForm()"
+          [disabled]="isLoading()"
+        />
+        <p-button label="Guardar" icon="pi pi-check" type="submit" [loading]="isLoading()" />
+      </div>
+    </form>
+  </div>
+</p-dialog>

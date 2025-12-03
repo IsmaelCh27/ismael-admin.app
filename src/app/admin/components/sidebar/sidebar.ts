@@ -9,6 +9,7 @@ import {
   MonitorCog,
   MonitorSmartphone,
   Share2,
+  UserRoundPen,
 } from 'lucide-angular';
 import { DrawerModule } from 'primeng/drawer';
 import { TooltipModule } from 'primeng/tooltip';
@@ -34,6 +35,11 @@ export class Sidebar {
   readonly LogOutIcon = LogOut;
 
   menus: MenuEntry[] = [
+    {
+      label: 'Mi Perfil',
+      icon: UserRoundPen,
+      link: '/admin/profile',
+    },
     {
       label: 'Proyectos',
       icon: MonitorSmartphone,
