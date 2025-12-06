@@ -1,3 +1,246 @@
-<p-card header="Projects Page" class="h-full">
-  <div class=""></div>
+<p-card class="h-full">
+  <ng-template pTemplate="title">
+    <div class="flex justify-between items-center pb-5">
+      <h2 class="text-2xl">Proyectos</h2>
+      <div class="">
+        <p-button label="Nuevo" icon="pi pi-plus" size="small" (click)="openForm()" />
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="border border-gray-200 rounded-lg pt-1">
+    <p-table
+      [value]="projects()"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      rowHover
+    >
+      <ng-template #header>
+        <tr>
+          <th>Nro.</th>
+          <th>Imagen</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Tecnologías</th>
+          <th class="text-end! w-10">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <tr>
+          @if (isLoading()) {
+            <td><p-skeleton width="2rem" /></td>
+            <td><p-skeleton size="2rem" /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td>
+              <div class="flex gap-1">
+                <p-skeleton />
+                <p-skeleton />
+              </div>
+            </td>
+          } @else {
+            <td colspan="6" class="text-center!">No hay proyectos registrados.</td>
+          }
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-project let-index="rowIndex">
+        <tr>
+          <td>{{ index + 1 }}</td>
+          <td>
+            <img
+              [src]="project.image_link"
+              [style]="{ width: 'auto', height: '23px' }"
+              class="rounded"
+            />
+          </td>
+          <td>{{ project.name }}</td>
+          <td>
+            <div
+              class="truncate max-w-[200px]"
+              [pTooltip]="project.description"
+              tooltipPosition="bottom"
+            >
+              {{ project.description }}
+            </div>
+          </td>
+          <td>
+            <div class="flex gap-1 flex-wrap">
+              @for (tech of project.technologies; track tech.id) {
+                <span
+                  class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300"
+                >
+                  {{ tech.name }}
+                </span>
+              }
+            </div>
+          </td>
+          <td class="py-0!">
+            <div class="flex justify-end gap-1">
+              <p-button
+                icon="pi pi-pencil"
+                size="small"
+                severity="info"
+                pTooltip="Editar"
+                tooltipPosition="bottom"
+                [outlined]="true"
+                (click)="handleClickEdit(project)"
+              />
+              <p-button
+                icon="pi pi-trash"
+                size="small"
+                severity="danger"
+                pTooltip="Eliminar"
+                tooltipPosition="bottom"
+                [outlined]="true"
+                (click)="handleClickDelete($event, project)"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </p-card>
+
+<p-confirmdialog [closable]="false">
+  <ng-template #footer let-footer>
+    <div class="flex justify-end gap-3">
+      <p-button
+        label="No"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="isLoading()"
+        (click)="rejectDelete()"
+      />
+      <p-button label="Si" severity="danger" [loading]="isLoading()" (click)="acceptDelete()" />
+    </div>
+  </ng-template>
+</p-confirmdialog>
+
+<p-dialog
+  [header]="project().id ? 'Editar Proyecto' : 'Registrar Proyecto'"
+  [modal]="true"
+  [(visible)]="formOpen"
+  [focusOnShow]="false"
+  (onShow)="nameInput.focus()"
+  [style]="{ width: '40rem' }"
+>
+  <div class="flex items-center gap-4 pt-5 px-3">
+    <form
+      class="flex flex-col gap-8 leading-7 w-full"
+      [formGroup]="validForm"
+      (ngSubmit)="onSubmit()"
+    >
+      <!-- Nombre -->
+      <p-floatlabel>
+        <input
+          pInputText
+          type="text"
+          inputId="name"
+          #nameInput
+          formControlName="name"
+          [invalid]="validForm.get('name')?.touched && validForm.get('name')?.invalid"
+          fluid
+        />
+        <label for="name">Nombre *</label>
+      </p-floatlabel>
+
+      <!-- Imagen -->
+      <p-floatlabel>
+        <p-select
+          [options]="images()"
+          [showClear]="true"
+          optionValue="public_url"
+          inputId="image_link"
+          formControlName="image_link"
+          [invalid]="validForm.get('image_link')?.touched && validForm.get('image_link')?.invalid"
+          fluid
+        >
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2">
+              <img [src]="validForm.get('image_link')?.value" style="width: 18px" />
+              <div>{{ selectedOption?.name }}</div>
+            </div>
+          </ng-template>
+          <ng-template let-image #item>
+            <div class="flex items-center gap-2">
+              <img [src]="image.public_url" style="width: 22px" />
+              <div>{{ image.name }}</div>
+            </div>
+          </ng-template>
+        </p-select>
+        <label for="image_link">Imagen *</label>
+      </p-floatlabel>
+
+      <!-- Tecnologías (MultiSelect) -->
+      <p-floatlabel>
+        <p-multiselect
+          [options]="technologies()"
+          formControlName="technologies_ids"
+          optionLabel="name"
+          optionValue="id"
+          [showClear]="true"
+          inputId="technologies"
+          fluid
+          [filter]="true"
+          selectedItemsLabel="{0} tecnologías seleccionadas"
+          [maxSelectedLabels]="2"
+        >
+          <ng-template let-tech #item>
+            <div class="flex items-center gap-2">
+              @if (tech.icon_link) {
+                <img [src]="tech.icon_link" style="width: 18px" />
+              }
+              <div>{{ tech.name }}</div>
+            </div>
+          </ng-template>
+        </p-multiselect>
+        <label for="technologies">Tecnologías</label>
+      </p-floatlabel>
+
+      <!-- Links -->
+      <p-floatlabel class="flex-1">
+        <input pInputText type="text" inputId="demo_link" formControlName="demo_link" fluid />
+        <label for="demo_link">Link Demo</label>
+      </p-floatlabel>
+
+      <!-- Link Repositorio -->
+      <p-floatlabel class="flex-1">
+        <input
+          pInputText
+          type="text"
+          inputId="repository_link"
+          formControlName="repository_link"
+          fluid
+        />
+        <label for="repository_link">Link Repositorio</label>
+      </p-floatlabel>
+
+      <!-- Descripción -->
+      <p-floatlabel>
+        <textarea
+          pTextarea
+          id="description"
+          rows="3"
+          formControlName="description"
+          fluid
+        ></textarea>
+        <label for="description">Descripción</label>
+      </p-floatlabel>
+
+      <div class="flex justify-end gap-3">
+        <p-button
+          label="Cancelar"
+          severity="secondary"
+          (click)="closeForm()"
+          [disabled]="isLoading()"
+        />
+        <p-button label="Guardar" icon="pi pi-check" type="submit" [loading]="isLoading()" />
+      </div>
+    </form>
+  </div>
+</p-dialog>
