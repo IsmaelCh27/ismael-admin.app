@@ -13,6 +13,15 @@ if (existsSync('.env')) {
   });
 }
 
+// Validar que las variables existan
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+  console.error('❌ Error: SUPABASE_URL or SUPABASE_KEY environment variables are missing.');
+  console.error('Make sure they are set in your .env file (local) or Vercel project settings.');
+  process.exit(1);
+}
+
+console.log('✅ Environment variables loaded successfully.');
+
 const targetPath = './src/environments/environment.ts';
 const targetPathDev = './src/environments/environment.development.ts';
 
